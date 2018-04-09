@@ -1,0 +1,64 @@
+/*********************************************************************************************************
+** 工程功能 ：跑马灯实验
+** 工程作者 ：Blue Sky Teams——ZZL
+** 工程版本 ：V1.0
+*********************************************************************************************************/
+#include<STC12C5A60S2.h>
+#include<intrins.h>
+
+#define uchar	unsigned	char
+#define uint	unsigned	int
+#define	LED_PORT	P0			  //定义跑马灯连接的端口
+void Delay_ms(uint time)
+{
+unsigned char p,m;   //m为频率常数变量    
+  unsigned char i=0;   
+  TMOD&=0x0f;   
+  TMOD|=0x01;   
+  TH0=0xd8;TL0=0xef;   
+  IE=0x82;   
+	uint i,j;
+	for(i = 0;i < time;i ++)
+		for(j = 0;j < 930;j ++);
+}
+/*********************************************************************************************************
+** 函数功能 ：延时函数
+** 函数说明 ：利用软件延时，占用CPU，经调试最小延时的单位大约为1ms，
+** 入口参数 ：time:需要延时的时间，单位ms，如time = 1000，则延时1000ms
+** 出口参数 ：无
+*********************************************************************************************************/
+void Delay_ms(uint time)
+{
+	uint i,j;
+	for(i = 0;i < time;i ++)
+		for(j = 0;j < 930;j ++);
+}
+
+void main()
+{
+	uchar temp = 0xFE,i = 0,flag = 0;
+	while(1)
+	{
+		if(flag == 0)
+		{
+			LED_PORT = temp;
+			Delay_ms(500);//延时0.5s
+			//移位函数_crol_()包含在头文件intrins.h里面，在#include<intrins.h>之后，可以直接调用这个函数
+			temp=_crol_(temp,1);//循环左移一位（例如：若调用函数前temp：0000 0001 ,调用函数后temp：0000 0010）
+			i++;
+			if(i == 7)flag = 1;			
+		}
+		else 
+		{
+			LED_PORT = temp;
+			Delay_ms(500);//延时0.5s
+			temp=_cror_(temp,1);//循环左移一位（例如：若调用函数前temp：0000 0001 ,调用函数后temp：1000 0000）
+			i--;
+			if(i == 0)flag = 0;			
+		}
+
+	}			
+}
+
+
+/************************** (C) COPYRIGHT 2011 Blue Sky Teams *****END OF FILE*****************************/
